@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ room }} - Chatter Box</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <style>
+        /* Adding inline styles here for demonstration, you can move them to style.css later */
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .chat-container {
+            width: 90%;
+            max-width: 1000px;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        #chat-box {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #ccc;
+        }
+
+        #chat-box p {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+
+        #message-form {
+            display: flex;
+            padding: 10px;
+            background-color: #f4f4f4;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        #message-input {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        #message-form button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #message-form button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Button styles for navigation */
+        .nav-button {
+            position: fixed;
+            top: 20px;
+            padding: 8px 12px;
+            font-size: 14px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            z-index: 10;
+        }
+
+        .nav-button:hover {
+            background-color: #0056b3;
+        }
+
+        #home-button {
+            left: 20px;
+        }
+
+        #room-button {
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Home button to go back to alias selection -->
+    <button id="home-button" class="nav-button" onclick="leaveRoomAndGoHome()">Home</button>
+
+    <!-- Room selection button to go back to choose rooms -->
+    <button id="room-button" class="nav-button" onclick="leaveRoomAndGoRoomSelection()">Choose Room</button>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            {{ room }}
+        </div>
+        <div id="chat-box"></div>
+        <form id="message-form">
+            <input type="text" id="message-input" placeholder="Type your message...">
+            <button type="submit">Send</button>
+        </form>
+    </div>
+
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const socket = io.connect('http://' + document.domain + ':' + location.port);
+            const chatBox = document.getElementById('chat-box');
+
+            socket.emit('join', {
+                alias: '{{ alias }}',
+                room: '{{ room }}'
+            });
+
+            socket.on('message', function(data) {
+                const message = document.createElement('p');
+                message.textContent = data;
+                chatBox.appendChild(message);
+                chatBox.scrollTop = chatBox.scrollHeight;  // Automatically scroll to the bottom
+            });
+
+            document.getElementById('message-form').onsubmit = function(e) {
+                e.preventDefault();
+                const message = document.getElementById('message-input').value;
+                if (message.trim() !== "") {
+                    socket.emit('message', {
+                        alias: '{{ alias }}',
+                        room: '{{ room }}',
+                        message: message
+                    });
+                    document.getElementById('message-input').value = '';
+                }
+            };
+
+            // Function to leave the room and go back to the home page
+            window.leaveRoomAndGoHome = function() {
+                socket.emit('leave', {
+                    alias: '{{ alias }}',
+                    room: '{{ room }}'
+                });
+                window.location.href = "/";
+            };
+
+            // Function to leave the room and go back to the room selection page
+            window.leaveRoomAndGoRoomSelection = function() {
+                socket.emit('leave', {
+                    alias: '{{ alias }}',
+                    room: '{{ room }}'
+                });
+                window.location.href = "/select_room?alias={{ alias }}";
+            };            
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="admin-dashboard-container">
+        <h1>Admin Dashboard</h1>
+        <h2>Connected Users</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>IP Address</th>
+                    <th>Aliases</th>
+                    <th>Recent Activity</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ip, aliases in connected_users.items() %}
+                <tr>
+                    <td>{{ ip }}</td>
+                    <td>{{ aliases | join(', ') }}</td>
+                    <td>
+                        <ul>
+                            {% for activity in recent_activity[ip] %}
+                            <li>
+                                <strong>{{ activity[0] }}:</strong> {{ activity[1] }} <small>({{ activity[2] }})</small>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>
+                        {% if ip in banned_ips %}
+                        <form action="{{ url_for('admin_dashboard') }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="ip" value="{{ ip }}">
+                            <input type="hidden" name="action" value="unban">
+                            <button type="submit">Unban</button>
+                        </form>
+                        {% else %}
+                        <form action="{{ url_for('admin_dashboard') }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="ip" value="{{ ip }}">
+                            <input type="hidden" name="action" value="ban">
+                            <button type="submit">Ban</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{{ url_for('admin_logout') }}">Logout</a>
+    </div>
+</body>
+</html>
