@@ -1,3 +1,6 @@
+import eventlet
+eventlet.monkey_patch()
+
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_socketio import SocketIO, join_room, leave_room, send
 from collections import defaultdict
@@ -163,6 +166,7 @@ def handle_chat_message(data):
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
+
 
 
 
