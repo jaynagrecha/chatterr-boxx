@@ -15,13 +15,16 @@ ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "password"  # Change this to something secure!
 
 # Room names and descriptions
-rooms = ["Rape Punishments", "Country Politics", "LGBTQ is Shit", "Freedom of Speech vs Hurt Feelings", "Ask the Rich"]
+rooms = ["Rape Punishments", "Country Politics", "LGBTQ is Shit", "Freedom of Speech vs Hurt Feelings", "Ask the Rich", "Truth Hurts", "Religion Without Respect Clauses", "Punishment vs Reform"]
 descriptions = {
     "Rape Punishments": "An open uncensored stage to discuss what should be done as punishment for rapes.",
     "Country Politics": "An open platform to discuss hot politics of any country without censorship.",
     "LGBTQ is Shit": "An uncensored platform to discuss the crazy shit people who represent themselves as batshit crazy things and such related stuff.",
     "Freedom of Speech vs Hurt Feelings": "A raw debate on whether free speech should protect offensive opinions, or if society is right to limit speech in the name of safety.",
-    "Ask the Rich": "A no-shame platform where people openly ask wealthy individuals for financial help or gifts, justify their reasons, and leave the decision entirely to the giver."
+    "Ask the Rich": "A no-shame platform where people openly ask wealthy individuals for financial help or gifts, justify their reasons, and leave the decision entirely to the giver.",
+    "Truth Hurts": "A space where uncomfortable truths are discussed openly, even if they offend, disturb, or challenge popular narratives.",
+    "Religion Without Respect Clauses": "A no-protection discussion where religious beliefs, contradictions, control mechanisms, and social impact can be openly questioned.",
+    "Punishment vs Reform": "An uncensored space to debate whether criminals deserve rehabilitation or harsh punishment, and where society should draw the line."
 }
 
 # List of banned IP addresses
@@ -168,6 +171,7 @@ def handle_chat_message(data):
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
+
 
 
 
