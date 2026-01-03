@@ -5,7 +5,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mysecret'
-socketio = SocketIO(app, async_mode='eventlet')
+socketio = SocketIO(app, async_mode="eventlet", cors_allowed_origins="*")
 
 # Admin credentials (should be securely stored in production)
 ADMIN_USERNAME = "admin"
@@ -161,3 +161,4 @@ def handle_message(data):
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
+
