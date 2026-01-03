@@ -138,58 +138,77 @@
     </div>
 
     <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', function() {
-            const socket = io({transports: ["polling", "websocket"], timeout: 20000});
-            socket.on("connect", () => console.log("✅ connected", socket.id));
-            socket.on("connect_error", (e) => console.log("❌ connect_error", e?.message || e));
-            const chatBox = document.getElementById('chat-box');
+document.addEventListener("DOMContentLoaded", function () {
+  const chatBox = document.getElementById("chat-box");
 
-            socket.emit('join', {
-                alias: '{{ alias }}',
-                room: '{{ room }}'
-            });
+  // helpful visibility
+  console.log("alias:", "{{ alias }}");
+  console.log("room:", "{{ room }}");
 
-            socket.on('message', function(data) {
-                const message = document.createElement('p');
-                message.textContent = data;
-                chatBox.appendChild(message);
-                chatBox.scrollTop = chatBox.scrollHeight;  // Automatically scroll to the bottom
-            });
+  const socket = io({
+    transports: ["polling", "websocket"],
+    timeout: 20000,
+    path: "/socket.io"
+  });
 
-            document.getElementById('message-form').onsubmit = function(e) {
-                e.preventDefault();
-                const message = document.getElementById('message-input').value;
-                if (message.trim() !== "") {
-                    socket.emit('message', {
-                        alias: '{{ alias }}',
-                        room: '{{ room }}',
-                        message: message
-                    });
-                    document.getElementById('message-input').value = '';
-                }
-            };
+  socket.on("connect", () => {
+    console.log("✅ connected", socket.id);
 
-            // Function to leave the room and go back to the home page
-            window.leaveRoomAndGoHome = function() {
-                socket.emit('leave', {
-                    alias: '{{ alias }}',
-                    room: '{{ room }}'
-                });
-                window.location.href = "/";
-            };
+    // join ONLY after connect
+    socket.emit("join", {
+      alias: "{{ alias }}",
+      room: "{{ room }}"
+    });
+    console.log("➡️ join emitted");
+  });
 
-            // Function to leave the room and go back to the room selection page
-            window.leaveRoomAndGoRoomSelection = function() {
-                socket.emit('leave', {
-                    alias: '{{ alias }}',
-                    room: '{{ room }}'
-                });
-                window.location.href = "/select_room?alias={{ alias }}";
-            };            
-        });
-    </script>
+  socket.on("connect_error", (e) => console.log("❌ connect_error", e?.message || e));
+
+  // See every incoming event (debug)
+  socket.onAny((event, ...args) => {
+    console.log("📩 event:", event, args);
+  });
+
+  // Render messages safely (string or object)
+  socket.on("message", (data) => {
+    const text = (typeof data === "string") ? data : JSON.stringify(data);
+    const p = document.createElement("p");
+    p.textContent = text;
+    chatBox.appendChild(p);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+
+  // Use a custom event name for chat payload (avoid reserved "message")
+  document.getElementById("message-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const msg = document.getElementById("message-input").value.trim();
+    if (!msg) return;
+
+    console.log("➡️ sending:", msg);
+
+    socket.emit("chat_message", {
+      alias: "{{ alias }}",
+      room: "{{ room }}",
+      message: msg
+    });
+
+    document.getElementById("message-input").value = "";
+  });
+
+  window.leaveRoomAndGoHome = function () {
+    socket.emit("leave", { alias: "{{ alias }}", room: "{{ room }}" });
+    window.location.href = "/";
+  };
+
+  window.leaveRoomAndGoRoomSelection = function () {
+    socket.emit("leave", { alias: "{{ alias }}", room: "{{ room }}" });
+    window.location.href = "/select_room?alias={{ alias }}";
+  };
+});
+</script>
 </body>
 </html>
+
 
 
 
