@@ -138,6 +138,7 @@ def handle_leave(data):
 
 @socketio.on('chat_message')
 def handle_chat_message(data):
+    print("✅ RECEIVED chat_message:", data)
     alias = data["alias"]
     room = data["room"]
     message = data["message"]
@@ -162,6 +163,7 @@ def handle_chat_message(data):
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
+
 
 
 
