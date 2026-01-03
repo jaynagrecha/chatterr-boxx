@@ -136,8 +136,8 @@ def handle_leave(data):
     leave_room(room)
     send(f'{alias} has left the {room} room.', to=room)
 
-@socketio.on('message')
-def message(data):
+@socketio.on('chat_message')
+def handle_chat_message(data):
     alias = data["alias"]
     room = data["room"]
     message = data["message"]
@@ -162,6 +162,7 @@ def message(data):
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
+
 
 
 
