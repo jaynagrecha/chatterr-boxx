@@ -137,10 +137,11 @@ def handle_leave(data):
     send(f'{alias} has left the {room} room.', to=room)
 
 @socketio.on('message')
-def handle_message(data):
-    alias = data['alias']
-    room = data['room']
-    message = data['message']
+def handle_chat_message(data):
+    alias = data["alias"]
+    room = data["room"]
+    message = data["message"]
+    send(f"{alias}: {message}", to=room)
     
     # Get the user's IP address
     user_ip = request.remote_addr
@@ -161,4 +162,5 @@ def handle_message(data):
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
+
 
